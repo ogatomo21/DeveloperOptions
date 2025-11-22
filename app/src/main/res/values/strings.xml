@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">developerOptions</string>
+    <string name="disabled_message">Developer options are disabled!</string>
+    <string name="write_secure_permission_denied_title">WRITE_SECURE_SETTINGS Permission Error</string>
+    <string name="write_secure_permission_denied_message">Please grant the WRITE_SECURE_SETTINGS permission to this app via ADB.</string>
+    <string name="usb_debug">USB Debug</string>
+    <string name="adb_enable">ADB Enable</string>
+    <string name="adb_disable">ADB Disable</string>
+    <string name="notification_need_title">Notification permission is required</string>
+    <string name="notification_need_message">When enabling/disabling USB debugging via a quick settings tile fails, notification permission is required to display an error.</string>
+    <string name="allow">Allow</string>
+    <string name="maybe">Maybe later</string>
+    <string name="adb_helper_title">ADB requires permission to be granted</string>
+    <string name="adb_helper_body">To toggle USB debugging from the Quick Settings tile, you need the WRITE_SECURE_SETTINGS permission.\n\nPlease run the following command from your PC:</string>
+    <string name="adb_helper_command">adb shell pm grant net.ogatomo.developerOptions android.permission.WRITE_SECURE_SETTINGS</string>
+</resources>

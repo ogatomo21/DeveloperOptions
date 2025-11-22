@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">開発者向けオプション</string>
+    <string name="disabled_message">開発者向けオプションが無効です！</string>
+    <string name="write_secure_permission_denied_title">WRITE_SECURE_SETTINGS 権限エラー</string>
+    <string name="write_secure_permission_denied_message">ADBで WRITE_SECURE_SETTINGS 権限を当アプリに付与してください</string>
+    <string name="usb_debug">USB デバッグ</string>
+    <string name="adb_enable">ADB 有効</string>
+    <string name="adb_disable">ADB 無効</string>
+    <string name="notification_need_title">通知の許可が必要です</string>
+    <string name="notification_need_message">クイック設定タイルで行えるUSB デバッグの ON/OFF が失敗した際、エラーを表示するため通知の許可が必要です。</string>
+    <string name="allow">許可</string>
+    <string name="maybe">あとで</string>
+    <string name="adb_helper_title">ADBで権限の付与が必要です</string>
+    <string name="adb_helper_body">クイック設定タイルからUSBデバッグを切り替えるには WRITE_SECURE_SETTINGS の権限が必要です。\n\n以下のコマンドをPCから実行してください。</string>
+    <string name="adb_helper_command">adb shell pm grant net.ogatomo.developerOptions android.permission.WRITE_SECURE_SETTINGS</string>
+</resources>
