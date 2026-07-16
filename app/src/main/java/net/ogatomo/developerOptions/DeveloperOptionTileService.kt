@@ -70,7 +70,7 @@ class AdbToggleTileService : TileService() {
                 .setContentIntent(pending)
                 .addAction(
                     R.mipmap.ic_launcher,
-                    "設定方法を確認する",
+                    getString(R.string.permission_help_action),
                     actionIntent
                 )
                 .setAutoCancel(true)
@@ -92,9 +92,14 @@ class AdbToggleTileService : TileService() {
 
     private fun updateTileState() {
         val tile = qsTile ?: return
-        tile.state = if (isAdbEnabled()) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
-        tile.label = if (isAdbEnabled()) getString(R.string.adb_enable) else getString(R.string.adb_disable)
+        val enabled = isAdbEnabled()
+        tile.state = if (enabled) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
+        tile.label = getString(R.string.usb_debug)
         tile.icon = Icon.createWithResource(this, R.drawable.ic_adb_icon)
+        // API 29+: ON/OFF はサブタイトルに表示
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            tile.subtitle = getString(if (enabled) R.string.tile_state_on else R.string.tile_state_off)
+        }
         tile.updateTile()
     }
 }

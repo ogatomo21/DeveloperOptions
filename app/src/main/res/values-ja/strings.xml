@@ -2,15 +2,84 @@
     <string name="app_name">開発者向けオプション</string>
     <string name="disabled_message">開発者向けオプションが無効です！</string>
     <string name="write_secure_permission_denied_title">WRITE_SECURE_SETTINGS 権限エラー</string>
-    <string name="write_secure_permission_denied_message">ADBで WRITE_SECURE_SETTINGS 権限を当アプリに付与してください</string>
+    <string name="write_secure_permission_denied_message">Shizuku または ADB で WRITE_SECURE_SETTINGS 権限を当アプリに付与してください</string>
     <string name="usb_debug">USB デバッグ</string>
-    <string name="adb_enable">ADB 有効</string>
-    <string name="adb_disable">ADB 無効</string>
+    <string name="tile_state_on">ON</string>
+    <string name="tile_state_off">OFF</string>
     <string name="notification_need_title">通知の許可が必要です</string>
-    <string name="notification_need_message">クイック設定タイルで行えるUSB デバッグの ON/OFF が失敗した際、エラーを表示するため通知の許可が必要です。</string>
+    <string name="notification_need_message">クイック設定タイルで行える USB デバッグ / プライベート DNS の ON/OFF が失敗した際、エラーを表示するため通知の許可が必要です。</string>
     <string name="allow">許可</string>
     <string name="maybe">あとで</string>
-    <string name="adb_helper_title">ADBで権限の付与が必要です</string>
-    <string name="adb_helper_body">クイック設定タイルからUSBデバッグを切り替えるには WRITE_SECURE_SETTINGS の権限が必要です。\n\n以下のコマンドをPCから実行してください。</string>
+    <string name="adb_helper_title">権限の付与が必要です</string>
+    <string name="adb_helper_body">クイック設定タイルから USB デバッグ / プライベート DNS を切り替えるには WRITE_SECURE_SETTINGS の権限が必要です。\n\nShizuku が起動済みならワンタップで付与できます。PC から ADB コマンドを実行する方法もあります。</string>
     <string name="adb_helper_command">adb shell pm grant net.ogatomo.developerOptions android.permission.WRITE_SECURE_SETTINGS</string>
+    <string name="private_dns">プライベート DNS</string>
+    <string name="private_dns_mode_automatic">自動</string>
+    <string name="private_dns_mode_hostname">指定ホスト</string>
+    <string name="permission_help_action">設定方法を確認する</string>
+
+    <!-- Permission help / Shizuku -->
+    <string name="status_permission_granted">WRITE_SECURE_SETTINGS: 付与済み</string>
+    <string name="status_permission_missing">WRITE_SECURE_SETTINGS: 未付与</string>
+    <string name="status_shizuku_unavailable">Shizuku: 未インストール</string>
+    <string name="status_shizuku_dead">Shizuku: 未起動</string>
+    <string name="status_shizuku_pre_v11">Shizuku: バージョンが古い（v11 以上が必要）</string>
+    <string name="status_shizuku_no_permission">Shizuku: このアプリの利用が未許可</string>
+    <string name="status_shizuku_ready">Shizuku: 利用可能</string>
+
+    <string name="shizuku_section_title">方法1: Shizuku で付与</string>
+    <string name="shizuku_section_body">Shizuku をインストールして起動していれば、ワンタップで権限を付与できます。付与後は Shizuku なしでもクイック設定タイルが使えます。</string>
+    <string name="shizuku_grant_button">Shizuku で権限を付与</string>
+    <string name="shizuku_grant_button_done">付与済み</string>
+    <string name="shizuku_open_download">Shizuku を入手</string>
+    <string name="shizuku_open_app">Shizuku を開く</string>
+    <string name="shizuku_request_permission">Shizuku の利用を許可</string>
+    <string name="shizuku_granting">付与中…</string>
+    <string name="shizuku_hint_already_granted">権限は付与済みです。クイック設定タイルを利用できます。</string>
+    <string name="shizuku_hint_not_installed">Shizuku をインストールし、起動（ワイヤレスデバッグまたは root）してから戻ってください。</string>
+    <string name="shizuku_hint_not_running">Shizuku アプリでサービスを起動してから、この画面に戻ってボタンを再度タップしてください。</string>
+    <string name="shizuku_hint_pre_v11">Shizuku を v11 以上に更新してください。</string>
+    <string name="shizuku_hint_need_permission">表示されるダイアログでこのアプリの Shizuku 利用を許可すると、続けて権限付与を行います。</string>
+    <string name="shizuku_hint_ready">ボタンをタップすると Shizuku 経由で WRITE_SECURE_SETTINGS を付与します。</string>
+    <string name="shizuku_hint_granting">Shizuku 経由で権限を要求しています…</string>
+    <string name="shizuku_permission_denied">Shizuku の利用が拒否されました。必要なら Shizuku アプリ側で許可してください。</string>
+    <string name="shizuku_grant_success">WRITE_SECURE_SETTINGS を付与しました。</string>
+    <string name="shizuku_grant_failed">権限の付与に失敗しました: %1$s</string>
+
+    <string name="adb_section_title">方法2: ADB で付与（PC）</string>
+    <string name="adb_section_body">USB デバッグを有効にした端末を PC に接続し、次のコマンドを実行してください。</string>
+    <string name="copy_adb_command">ADB コマンドをコピー</string>
+    <string name="copied_to_clipboard">クリップボードにコピーしました</string>
+
+    <!-- App settings / mock location -->
+    <string name="app_settings_title">アプリの設定</string>
+    <string name="settings_section_secure">セキュア設定の権限</string>
+    <string name="settings_open_permission_help">権限の設定を開く</string>
+    <string name="settings_section_mock_location">仮の現在地情報アプリ</string>
+    <string name="settings_mock_location_body">仮の現在地に使うアプリを選び、有効 / 無効を切り替えます（開発者向けオプションの「仮の現在地情報アプリ」と同じ）。切り替えのたびに Shizuku が必要です。</string>
+    <string name="settings_mock_candidates">候補アプリ</string>
+    <string name="settings_mock_empty">ACCESS_MOCK_LOCATION を要求するアプリが見つかりません。仮の現在地アプリをインストールしてください。</string>
+    <string name="settings_mock_enable">選択したアプリを有効化</string>
+    <string name="settings_mock_disable">仮の現在地を無効化</string>
+    <string name="settings_mock_refresh">再読み込み</string>
+    <string name="settings_mock_selected_none">選択: なし</string>
+    <string name="settings_mock_selected">選択: %1$s (%2$s)</string>
+    <string name="settings_mock_active_off">有効状態: OFF</string>
+    <string name="settings_mock_active_on">有効状態: %1$s (%2$s)</string>
+    <string name="settings_mock_active_unknown">有効状態: 不明（確認には Shizuku が必要）</string>
+    <string name="settings_mock_status_loading">仮の現在地の状態を確認中…</string>
+    <string name="settings_mock_hint_ready">アプリを選んで「有効化」をタップするか、選択後にクイック設定タイルで切り替えできます。</string>
+    <string name="settings_mock_hint_on">仮の現在地は有効です。ここまたはクイック設定タイルから無効にできます。</string>
+    <string name="settings_mock_working">処理中…</string>
+    <string name="settings_mock_select_first">先に仮の現在地アプリを選択してください。</string>
+    <string name="settings_mock_enable_ok">仮の現在地アプリを有効にしました。</string>
+    <string name="settings_mock_disable_ok">仮の現在地を無効にしました。</string>
+    <string name="settings_mock_error">エラー: %1$s</string>
+    <string name="settings_version">バージョン %1$s (%2$d)</string>
+
+    <string name="mock_location">仮の現在地</string>
+    <string name="mock_location_not_selected">未選択</string>
+    <string name="mock_location_need_shizuku_title">Shizuku が必要です</string>
+    <string name="mock_location_need_shizuku_message">仮の現在地の切り替えには、Shizuku のインストール・起動・このアプリへの許可が必要です。詳細はアプリの設定を開いてください。</string>
+    <string name="mock_location_error_title">仮の現在地エラー</string>
 </resources>

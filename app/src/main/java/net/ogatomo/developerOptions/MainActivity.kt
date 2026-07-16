@@ -2,11 +2,9 @@ package net.ogatomo.developerOptions
 
 import android.Manifest
 import android.app.AlertDialog
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 
@@ -51,29 +49,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openDeveloperOption() {
-        val enabled = try {
-            Settings.Global.getInt(
-                contentResolver,
-                Settings.Global.DEVELOPMENT_SETTINGS_ENABLED,
-                0
-            ) == 1
-        } catch (e: Exception) {
-            false
-        }
-
-        if (enabled) {
-            val intent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(intent)
-        } else {
-            val fallback = Intent(Settings.ACTION_DEVICE_INFO_SETTINGS).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            }
-            startActivity(fallback)
-        }
-
+        DeveloperOptionsNavigator.open(this)
         finish()
     }
 }

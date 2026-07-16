@@ -2,15 +2,84 @@
     <string name="app_name">developerOptions</string>
     <string name="disabled_message">Developer options are disabled!</string>
     <string name="write_secure_permission_denied_title">WRITE_SECURE_SETTINGS Permission Error</string>
-    <string name="write_secure_permission_denied_message">Please grant the WRITE_SECURE_SETTINGS permission to this app via ADB.</string>
+    <string name="write_secure_permission_denied_message">Please grant the WRITE_SECURE_SETTINGS permission to this app via Shizuku or ADB.</string>
     <string name="usb_debug">USB Debug</string>
-    <string name="adb_enable">ADB Enable</string>
-    <string name="adb_disable">ADB Disable</string>
+    <string name="tile_state_on">ON</string>
+    <string name="tile_state_off">OFF</string>
     <string name="notification_need_title">Notification permission is required</string>
-    <string name="notification_need_message">When enabling/disabling USB debugging via a quick settings tile fails, notification permission is required to display an error.</string>
+    <string name="notification_need_message">When enabling/disabling USB debugging or Private DNS via a quick settings tile fails, notification permission is required to display an error.</string>
     <string name="allow">Allow</string>
     <string name="maybe">Maybe later</string>
-    <string name="adb_helper_title">ADB requires permission to be granted</string>
-    <string name="adb_helper_body">To toggle USB debugging from the Quick Settings tile, you need the WRITE_SECURE_SETTINGS permission.\n\nPlease run the following command from your PC:</string>
+    <string name="adb_helper_title">Permission required</string>
+    <string name="adb_helper_body">To toggle USB debugging or Private DNS from the Quick Settings tile, this app needs the WRITE_SECURE_SETTINGS permission.\n\nYou can grant it with Shizuku (no PC required after Shizuku is running), or with an ADB command from a PC.</string>
     <string name="adb_helper_command">adb shell pm grant net.ogatomo.developerOptions android.permission.WRITE_SECURE_SETTINGS</string>
+    <string name="private_dns">Private DNS</string>
+    <string name="private_dns_mode_automatic">Automatic</string>
+    <string name="private_dns_mode_hostname">Hostname</string>
+    <string name="permission_help_action">View setup instructions</string>
+
+    <!-- Permission help / Shizuku -->
+    <string name="status_permission_granted">WRITE_SECURE_SETTINGS: granted</string>
+    <string name="status_permission_missing">WRITE_SECURE_SETTINGS: not granted</string>
+    <string name="status_shizuku_unavailable">Shizuku: not installed</string>
+    <string name="status_shizuku_dead">Shizuku: not running</string>
+    <string name="status_shizuku_pre_v11">Shizuku: version too old (v11+ required)</string>
+    <string name="status_shizuku_no_permission">Shizuku: app permission not granted</string>
+    <string name="status_shizuku_ready">Shizuku: ready</string>
+
+    <string name="shizuku_section_title">Option 1: Grant with Shizuku</string>
+    <string name="shizuku_section_body">If Shizuku is installed and running, you can grant the permission in one tap. After granting, Quick Settings tiles work without Shizuku.</string>
+    <string name="shizuku_grant_button">Grant with Shizuku</string>
+    <string name="shizuku_grant_button_done">Already granted</string>
+    <string name="shizuku_open_download">Get Shizuku</string>
+    <string name="shizuku_open_app">Open Shizuku</string>
+    <string name="shizuku_request_permission">Allow Shizuku access</string>
+    <string name="shizuku_granting">Granting…</string>
+    <string name="shizuku_hint_already_granted">Permission is already granted. You can use the Quick Settings tiles.</string>
+    <string name="shizuku_hint_not_installed">Install Shizuku, start it (Wireless debugging or root), then return here.</string>
+    <string name="shizuku_hint_not_running">Start Shizuku in the Shizuku app, then return here and tap the button again.</string>
+    <string name="shizuku_hint_pre_v11">Please update Shizuku to v11 or later.</string>
+    <string name="shizuku_hint_need_permission">Allow this app to use Shizuku when prompted, then granting will continue.</string>
+    <string name="shizuku_hint_ready">Tap the button to grant WRITE_SECURE_SETTINGS via Shizuku.</string>
+    <string name="shizuku_hint_granting">Requesting permission via Shizuku…</string>
+    <string name="shizuku_permission_denied">Shizuku permission was denied. Enable it in the Shizuku app if needed.</string>
+    <string name="shizuku_grant_success">WRITE_SECURE_SETTINGS granted successfully.</string>
+    <string name="shizuku_grant_failed">Failed to grant permission: %1$s</string>
+
+    <string name="adb_section_title">Option 2: Grant with ADB (PC)</string>
+    <string name="adb_section_body">Connect the device to a PC with USB debugging enabled and run:</string>
+    <string name="copy_adb_command">Copy ADB command</string>
+    <string name="copied_to_clipboard">Copied to clipboard</string>
+
+    <!-- App settings / mock location -->
+    <string name="app_settings_title">App settings</string>
+    <string name="settings_section_secure">Secure settings permission</string>
+    <string name="settings_open_permission_help">Open permission setup</string>
+    <string name="settings_section_mock_location">Mock location app</string>
+    <string name="settings_mock_location_body">Select a mock location app, then enable or disable it (same as Developer options → Select mock location app). Requires Shizuku each time you toggle.</string>
+    <string name="settings_mock_candidates">Installed candidates</string>
+    <string name="settings_mock_empty">No apps requesting ACCESS_MOCK_LOCATION were found. Install a mock location app first.</string>
+    <string name="settings_mock_enable">Enable selected app</string>
+    <string name="settings_mock_disable">Disable mock location</string>
+    <string name="settings_mock_refresh">Refresh</string>
+    <string name="settings_mock_selected_none">Selected: none</string>
+    <string name="settings_mock_selected">Selected: %1$s (%2$s)</string>
+    <string name="settings_mock_active_off">Active: OFF</string>
+    <string name="settings_mock_active_on">Active: %1$s (%2$s)</string>
+    <string name="settings_mock_active_unknown">Active: unknown (start Shizuku to check)</string>
+    <string name="settings_mock_status_loading">Checking mock location status…</string>
+    <string name="settings_mock_hint_ready">Select an app and tap Enable. Or use the Quick Settings tile after selection.</string>
+    <string name="settings_mock_hint_on">Mock location is active. Disable here or from the Quick Settings tile.</string>
+    <string name="settings_mock_working">Working…</string>
+    <string name="settings_mock_select_first">Select a mock location app first.</string>
+    <string name="settings_mock_enable_ok">Mock location app enabled.</string>
+    <string name="settings_mock_disable_ok">Mock location disabled.</string>
+    <string name="settings_mock_error">Error: %1$s</string>
+    <string name="settings_version">Version %1$s (%2$d)</string>
+
+    <string name="mock_location">Mock location</string>
+    <string name="mock_location_not_selected">Not selected</string>
+    <string name="mock_location_need_shizuku_title">Shizuku required</string>
+    <string name="mock_location_need_shizuku_message">Toggling mock location requires Shizuku to be installed, running, and permitted for this app. Open app settings for details.</string>
+    <string name="mock_location_error_title">Mock location error</string>
 </resources>

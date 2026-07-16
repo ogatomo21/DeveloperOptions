@@ -5,17 +5,22 @@
 # For more details, see
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# Shizuku
+-keep class rikka.shizuku.** { *; }
+-keep class moe.shizuku.server.** { *; }
+-keepclassmembers class * {
+    public <init>(android.content.Context);
+}
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# UserService (ComponentName で固定参照)
+-keep class net.ogatomo.developerOptions.shizuku.ShellUserService { *; }
+-keep class net.ogatomo.developerOptions.IShellCommandService { *; }
+-keep class net.ogatomo.developerOptions.IShellCommandService$Stub { *; }
+-keep class net.ogatomo.developerOptions.IShellCommandService$Stub$Proxy { *; }
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# Reflection targets (WRITE_SECURE_SETTINGS grant)
+-keep class android.content.pm.IPackageManager { *; }
+-keep class android.content.pm.IPackageManager$Stub { *; }
+
+# Hidden API bypass
+-keep class org.lsposed.hiddenapibypass.** { *; }

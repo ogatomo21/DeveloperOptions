@@ -1,49 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root_layout"
-    android:orientation="vertical"
-    android:fitsSystemWindows="true"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
 
-    <!-- 本文 -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <LinearLayout
-            android:orientation="vertical"
-            android:padding="24dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
 
             <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="@string/adb_helper_title"
                 android:textSize="22sp"
-                android:textStyle="bold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:textStyle="bold" />
 
             <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="@string/adb_helper_body"
-                android:textSize="16sp"
+                android:textSize="16sp" />
+
+            <!-- 現在の状態 -->
+            <TextView
+                android:id="@+id/status_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="#eeeeee"
+                android:padding="12dp"
+                android:textSize="15sp" />
+
+            <!-- Shizuku で付与 -->
+            <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/shizuku_section_title"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
             <TextView
-                android:layout_marginTop="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/shizuku_section_body"
+                android:textSize="15sp" />
+
+            <Button
+                android:id="@+id/shizuku_grant_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/shizuku_grant_button" />
+
+            <TextView
+                android:id="@+id/shizuku_hint_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textColor="#666666"
+                android:textSize="13sp" />
+
+            <!-- PC / ADB フォールバック -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:text="@string/adb_section_title"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/adb_section_body"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/adb_command_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="#eeeeee"
+                android:padding="12dp"
                 android:text="@string/adb_helper_command"
                 android:textIsSelectable="true"
-                android:textSize="16sp"
-                android:typeface="monospace"
-                android:padding="12dp"
-                android:background="#eeeeee"
+                android:textSize="14sp"
+                android:typeface="monospace" />
+
+            <Button
+                android:id="@+id/copy_command_button"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/copy_adb_command" />
         </LinearLayout>
-
     </ScrollView>
-
 </LinearLayout>

@@ -17,4 +17,7 @@ app/release/
 app/build/
 *.apk
 *.aab
+*.jks
+*.keystore
+app/keystore.jks
 .idea/

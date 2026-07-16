@@ -26,6 +26,17 @@
             android:name="net.ogatomo.developerOptions.WriteSecureSettingsHelpActivity"
             android:exported="true" />
 
+        <!-- システム「アプリ情報」→「アプリ内の設定」 -->
+        <activity
+            android:name="net.ogatomo.developerOptions.AppSettingsActivity"
+            android:exported="true"
+            android:label="@string/app_settings_title">
+            <intent-filter>
+                <action android:name="android.intent.action.APPLICATION_PREFERENCES" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <service
             android:name="net.ogatomo.developerOptions.AdbToggleTileService"
             android:label="@string/usb_debug"
@@ -39,10 +50,49 @@
             </intent-filter>
         </service>
 
+        <service
+            android:name="net.ogatomo.developerOptions.PrivateDnsTileService"
+            android:label="@string/private_dns"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            android:exported="true"
+            android:icon="@drawable/ic_private_dns_icon"
+            tools:targetApi="28">
+
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name="net.ogatomo.developerOptions.MockLocationTileService"
+            android:label="@string/mock_location"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            android:exported="true"
+            android:icon="@drawable/ic_mock_location_icon"
+            tools:targetApi="24">
+
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <!-- Shizuku binder 取得用。permission で通常アプリからのアクセスを制限 -->
+        <provider
+            android:name="rikka.shizuku.ShizukuProvider"
+            android:authorities="${applicationId}.shizuku"
+            android:multiprocess="false"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
+
     </application>
 
     <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS"
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- 仮の現在地候補アプリの列挙 -->
+    <uses-permission
+        android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
 
 </manifest>
