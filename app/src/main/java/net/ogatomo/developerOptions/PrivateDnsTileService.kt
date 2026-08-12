@@ -98,36 +98,42 @@ class PrivateDnsTileService : TileService() {
 
     private fun updateTileState() {
         val tile = qsTile ?: return
+        try {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+                tile.state = Tile.STATE_UNAVAILABLE
+                tile.label = getString(R.string.private_dns)
+                tile.icon = Icon.createWithResource(this, R.drawable.ic_private_dns_icon)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    tile.subtitle = getString(R.string.tile_state_off)
+                }
+                tile.updateTile()
+                return
+            }
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-            tile.state = Tile.STATE_UNAVAILABLE
+            val enabled = isPrivateDnsEnabled()
+            tile.state = if (enabled) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
             tile.label = getString(R.string.private_dns)
             tile.icon = Icon.createWithResource(this, R.drawable.ic_private_dns_icon)
-            tile.updateTile()
-            return
-        }
 
-        val enabled = isPrivateDnsEnabled()
-        tile.state = if (enabled) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
-        tile.label = getString(R.string.private_dns)
-        tile.icon = Icon.createWithResource(this, R.drawable.ic_private_dns_icon)
-
-        // API 29+: 無効時は OFF、有効時はモード詳細
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            tile.subtitle = when {
-                !enabled -> getString(R.string.tile_state_off)
-                getPrivateDnsMode() == MODE_HOSTNAME -> {
-                    getPrivateDnsSpecifier()?.takeIf { it.isNotEmpty() }
-                        ?: getString(R.string.private_dns_mode_hostname)
+            // API 29+: 無効時は OFF、有効時はモード詳細（空にしない）
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                tile.subtitle = when {
+                    !enabled -> getString(R.string.tile_state_off)
+                    getPrivateDnsMode() == MODE_HOSTNAME -> {
+                        getPrivateDnsSpecifier()?.takeIf { it.isNotEmpty() }
+                            ?: getString(R.string.private_dns_mode_hostname)
+                    }
+                    getPrivateDnsMode() == MODE_OPPORTUNISTIC -> {
+                        getString(R.string.private_dns_mode_automatic)
+                    }
+                    else -> getString(R.string.tile_state_on)
                 }
-                getPrivateDnsMode() == MODE_OPPORTUNISTIC -> {
-                    getString(R.string.private_dns_mode_automatic)
-                }
-                else -> getString(R.string.tile_state_on)
             }
-        }
 
-        tile.updateTile()
+            tile.updateTile()
+        } catch (_: Throwable) {
+            // QS 切断直後などで失敗してもサービスを落とさない
+        }
     }
 
     private fun notifyPermissionDenied() {
@@ -160,7 +166,11 @@ class PrivateDnsTileService : TileService() {
             .setAutoCancel(true)
             .build()
 
-        NotificationManagerCompat.from(this).notify(NOTIFICATION_ID, notification)
+        try {
+            NotificationManagerCompat.from(this).notify(NOTIFICATION_ID, notification)
+        } catch (_: SecurityException) {
+            // POST_NOTIFICATIONS 未許可時は無視
+        }
     }
 
     companion object {

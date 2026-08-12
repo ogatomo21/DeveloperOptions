@@ -6,6 +6,8 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.graphics.drawable.Icon
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import androidx.annotation.RequiresApi
@@ -14,21 +16,38 @@ import androidx.core.app.NotificationManagerCompat
 import net.ogatomo.developerOptions.permission.MockLocationOps
 import net.ogatomo.developerOptions.permission.ShizukuAvailability
 import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * 仮の現在地情報アプリの有効 / 無効をトグルする QS タイル。
  *
  * AppOps 操作のためタップのたびに Shizuku が必要。
  * 対象アプリ未選択時は設定画面を開く。
+ *
+ * タイル表示は選択パッケージのみを確認する（全アプリ走査はしない）。
+ * 非同期完了前に仮の ON/OFF を出し、パネルが空白・無応答に見えないようにする。
  */
 @RequiresApi(Build.VERSION_CODES.N)
 class MockLocationTileService : TileService() {
 
     private val executor = Executors.newSingleThreadExecutor()
+    private val mainHandler = Handler(Looper.getMainLooper())
+    private val generation = AtomicInteger(0)
+
+    @Volatile
+    private var listening = false
 
     override fun onStartListening() {
         super.onStartListening()
-        refreshTileAsync()
+        listening = true
+        refreshTile()
+    }
+
+    override fun onStopListening() {
+        listening = false
+        // 進行中の非同期結果を破棄（閉じた後の updateTile を避ける）
+        generation.incrementAndGet()
+        super.onStopListening()
     }
 
     override fun onClick() {
@@ -51,65 +70,110 @@ class MockLocationTileService : TileService() {
             return
         }
 
+        // 操作中も字幕が空にならないよう、先に仮状態を維持したままトグル
+        val gen = generation.incrementAndGet()
         executor.execute {
             val result = runCatching { MockLocationOps.toggle(this) }
-            // Tile 更新はメイン想定ではないが qsTile はどこからでも update 可
-            result.fold(
-                onSuccess = { refreshTileAsync() },
-                onFailure = {
-                    notifyError(it.message ?: it.toString())
-                    refreshTileAsync()
-                }
-            )
+            result.onFailure {
+                notifyError(it.message ?: it.toString())
+            }
+            if (gen != generation.get()) return@execute
+            val allowed = result.getOrElse {
+                runCatching { MockLocationOps.isSelectedAllowed(this) }.getOrDefault(false)
+            }
+            val subtitle = if (allowed) {
+                MockLocationOps.packageLabel(this, selected)
+            } else {
+                getString(R.string.tile_state_off)
+            }
+            postApply(gen, allowed, subtitle)
         }
     }
 
     override fun onDestroy() {
-        super.onDestroy()
+        listening = false
+        generation.incrementAndGet()
         executor.shutdownNow()
+        super.onDestroy()
     }
 
-    private fun refreshTileAsync() {
+    private fun refreshTile() {
         val tile = qsTile ?: return
         tile.label = getString(R.string.mock_location)
         tile.icon = Icon.createWithResource(this, R.drawable.ic_mock_location_icon)
 
         val selected = MockLocationOps.getSelectedPackage(this)
         if (selected.isNullOrEmpty()) {
-            tile.state = Tile.STATE_INACTIVE
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                tile.subtitle = getString(R.string.mock_location_not_selected)
-            }
-            tile.updateTile()
+            applyTile(
+                state = Tile.STATE_INACTIVE,
+                subtitle = getString(R.string.mock_location_not_selected)
+            )
             return
         }
 
         if (!ShizukuAvailability.isReady(this)) {
-            tile.state = Tile.STATE_INACTIVE
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                tile.subtitle = getString(R.string.tile_state_off)
-            }
-            tile.updateTile()
+            applyTile(
+                state = Tile.STATE_INACTIVE,
+                subtitle = getString(R.string.tile_state_off)
+            )
             return
         }
 
+        // 字幕が空のときだけ仮の OFF を即時表示（再表示時の点滅を避ける）
+        val subtitleBlank = Build.VERSION.SDK_INT < Build.VERSION_CODES.Q ||
+            tile.subtitle.isNullOrBlank()
+        if (subtitleBlank) {
+            applyTile(
+                state = Tile.STATE_INACTIVE,
+                subtitle = getString(R.string.tile_state_off)
+            )
+        } else {
+            // ラベル等だけ同期し、状態は非同期で確定
+            try {
+                tile.label = getString(R.string.mock_location)
+                tile.icon = Icon.createWithResource(this, R.drawable.ic_mock_location_icon)
+                tile.updateTile()
+            } catch (_: Throwable) {
+                // ignore
+            }
+        }
+
+        val gen = generation.incrementAndGet()
+        val selectedPkg = selected
         executor.execute {
-            val active = runCatching { MockLocationOps.getActivePackage(this) }.getOrNull()
-            val enabled = active != null
-            val labelForSub = if (active != null) {
-                MockLocationOps.packageLabel(this, active)
+            val allowed = runCatching { MockLocationOps.isSelectedAllowed(this) }.getOrDefault(false)
+            if (gen != generation.get()) return@execute
+            val subtitle = if (allowed) {
+                MockLocationOps.packageLabel(this, selectedPkg)
             } else {
                 getString(R.string.tile_state_off)
             }
-            // update on main-ish
-            val t = qsTile ?: return@execute
-            t.state = if (enabled) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
-            t.label = getString(R.string.mock_location)
-            t.icon = Icon.createWithResource(this, R.drawable.ic_mock_location_icon)
+            postApply(gen, allowed, subtitle)
+        }
+    }
+
+    private fun postApply(gen: Int, allowed: Boolean, subtitle: String) {
+        mainHandler.post {
+            if (!listening || gen != generation.get()) return@post
+            applyTile(
+                state = if (allowed) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE,
+                subtitle = subtitle
+            )
+        }
+    }
+
+    private fun applyTile(state: Int, subtitle: String) {
+        val tile = qsTile ?: return
+        try {
+            tile.state = state
+            tile.label = getString(R.string.mock_location)
+            tile.icon = Icon.createWithResource(this, R.drawable.ic_mock_location_icon)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                t.subtitle = labelForSub
+                tile.subtitle = subtitle
             }
-            t.updateTile()
+            tile.updateTile()
+        } catch (_: Throwable) {
+            // QS 切断直後などで失敗してもサービスを落とさない
         }
     }
 
@@ -177,7 +241,11 @@ class MockLocationTileService : TileService() {
             .setAutoCancel(true)
             .build()
 
-        NotificationManagerCompat.from(this).notify(id, notification)
+        try {
+            NotificationManagerCompat.from(this).notify(id, notification)
+        } catch (_: SecurityException) {
+            // POST_NOTIFICATIONS 未許可時は無視（タイル処理は継続）
+        }
     }
 
     companion object {

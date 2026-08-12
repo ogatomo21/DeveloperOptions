@@ -20,7 +20,8 @@ object ShellUserServiceClient {
         "net.ogatomo.developerOptions.shizuku.ShellUserService"
     private const val SERVICE_TAG = "developeroptions_shell"
     private const val SERVICE_VERSION = 2
-    private const val BIND_TIMEOUT_SEC = 15L
+    // QS タイル更新を長時間ブロックしない（失敗時は OFF 表示にフォールバック）
+    private const val BIND_TIMEOUT_SEC = 5L
 
     private val lock = Any()
     private var service: IShellCommandService? = null

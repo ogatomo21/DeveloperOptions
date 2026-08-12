@@ -75,7 +75,11 @@ class AdbToggleTileService : TileService() {
                 )
                 .setAutoCancel(true)
 
-            NotificationManagerCompat.from(this).notify(1, builder.build())
+            try {
+                NotificationManagerCompat.from(this).notify(1, builder.build())
+            } catch (_: SecurityException) {
+                // POST_NOTIFICATIONS 未許可時は無視
+            }
             return
         }
 
@@ -92,14 +96,20 @@ class AdbToggleTileService : TileService() {
 
     private fun updateTileState() {
         val tile = qsTile ?: return
-        val enabled = isAdbEnabled()
-        tile.state = if (enabled) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
-        tile.label = getString(R.string.usb_debug)
-        tile.icon = Icon.createWithResource(this, R.drawable.ic_adb_icon)
-        // API 29+: ON/OFF はサブタイトルに表示
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            tile.subtitle = getString(if (enabled) R.string.tile_state_on else R.string.tile_state_off)
+        try {
+            val enabled = isAdbEnabled()
+            tile.state = if (enabled) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
+            tile.label = getString(R.string.usb_debug)
+            tile.icon = Icon.createWithResource(this, R.drawable.ic_adb_icon)
+            // API 29+: ON/OFF はサブタイトルに表示（空にしない）
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                tile.subtitle = getString(
+                    if (enabled) R.string.tile_state_on else R.string.tile_state_off
+                )
+            }
+            tile.updateTile()
+        } catch (_: Throwable) {
+            // QS 切断直後などで失敗してもサービスを落とさない
         }
-        tile.updateTile()
     }
 }

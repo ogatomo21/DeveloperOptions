@@ -120,8 +120,21 @@ object MockLocationOps {
     }
 
     /**
+     * 選択中パッケージの mock_location が allow か（1 回の appops のみ）。
+     * QS タイル更新向け。全アプリ走査はしない。
+     */
+    fun isSelectedAllowed(context: Context): Boolean {
+        val selected = getSelectedPackage(context) ?: return false
+        if (!isPackageInstalled(context, selected)) return false
+        return runCatching {
+            ShizukuAvailability.requireReady(context)
+            isModeAllowed(context, selected)
+        }.getOrDefault(false)
+    }
+
+    /**
      * 現在 mock_location が allow のパッケージ。見つからなければ null。
-     * Shizuku READY が必要。
+     * Shizuku READY が必要。設定画面など、選択以外の許可も見つけたい場合向け。
      */
     fun getActivePackage(context: Context): String? {
         ShizukuAvailability.requireReady(context)
@@ -132,6 +145,7 @@ object MockLocationOps {
         }
 
         for (candidate in listCandidates(context)) {
+            if (candidate.packageName == selected) continue
             if (isModeAllowed(context, candidate.packageName)) {
                 return candidate.packageName
             }
@@ -140,11 +154,14 @@ object MockLocationOps {
     }
 
     fun isEnabled(context: Context): Boolean {
-        return runCatching { getActivePackage(context) != null }.getOrDefault(false)
+        return runCatching { isSelectedAllowed(context) }.getOrDefault(false)
     }
 
     /**
      * [packageName] を仮の現在地アプリとして有効化。以前の選択は deny。
+     *
+     * 全候補の appops 問い合わせは QS を固めるため行わない。
+     * 直前の選択パッケージだけ deny してから allow する。
      */
     fun enable(context: Context, packageName: String) {
         ShizukuAvailability.requireReady(context)
@@ -158,15 +175,6 @@ object MockLocationOps {
             runCatching { setMode(context, previous, allow = false) }
         }
 
-        for (candidate in listCandidates(context)) {
-            if (candidate.packageName == packageName) continue
-            runCatching {
-                if (isModeAllowed(context, candidate.packageName)) {
-                    setMode(context, candidate.packageName, allow = false)
-                }
-            }
-        }
-
         setMode(context, packageName, allow = true)
         setSelectedPackage(context, packageName)
 
@@ -176,30 +184,34 @@ object MockLocationOps {
     }
 
     /**
-     * 現在 / 選択中のアプリを deny して無効化。選択自体は保持（再 ON 用）。
+     * 選択中のアプリを deny して無効化。選択自体は保持（再 ON 用）。
+     *
+     * @param scanOthers true なら選択以外に allow が残っていればそれも deny（設定画面向け・重い）
      */
-    fun disable(context: Context) {
+    fun disable(context: Context, scanOthers: Boolean = false) {
         ShizukuAvailability.requireReady(context)
 
-        val active = runCatching { getActivePackage(context) }.getOrNull()
         val selected = getSelectedPackage(context)
-        val targets = linkedSetOf<String>()
-        if (!active.isNullOrEmpty()) targets.add(active)
-        if (!selected.isNullOrEmpty()) targets.add(selected)
+        if (!selected.isNullOrEmpty()) {
+            runCatching { setMode(context, selected, allow = false) }
+        }
 
-        for (pkg in targets) {
-            runCatching { setMode(context, pkg, allow = false) }
+        if (scanOthers) {
+            val stillActive = runCatching { getActivePackage(context) }.getOrNull()
+            if (!stillActive.isNullOrEmpty()) {
+                runCatching { setMode(context, stillActive, allow = false) }
+            }
         }
     }
 
     /**
-     * タイル用トグル。選択パッケージ必須。
+     * タイル用トグル。選択パッケージ必須。選択アプリのみを見て切替（全走査なし）。
      * @return トグル後に有効なら true
      */
     fun toggle(context: Context): Boolean {
         val selected = getSelectedPackage(context)
             ?: throw IllegalStateException("No mock location app selected")
-        return if (isEnabled(context)) {
+        return if (isSelectedAllowed(context)) {
             disable(context)
             false
         } else {

@@ -279,7 +279,7 @@ class AppSettingsActivity : AppCompatActivity() {
         ensureShizukuThen {
             setBusy(true)
             executor.execute {
-                val result = runCatching { MockLocationOps.disable(this) }
+                val result = runCatching { MockLocationOps.disable(this, scanOthers = true) }
                 runOnUiThread {
                     setBusy(false)
                     result.fold(
